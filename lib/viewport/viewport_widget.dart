@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
+import '../camera/camera_controller.dart';
 
 class ViewportWidget extends StatefulWidget {
   const ViewportWidget({super.key});
@@ -9,133 +9,112 @@ class ViewportWidget extends StatefulWidget {
 }
 
 class _ViewportWidgetState extends State<ViewportWidget> {
-  double zoom = 1.0;
-
-  void onPointerSignal(PointerSignalEvent event) {
-    if (event is PointerScrollEvent) {
-      setState(() {
-        zoom += event.scrollDelta.dy * -0.001;
-
-        if (zoom < 0.2) {
-          zoom = 0.2;
-        }
-
-        if (zoom > 5.0) {
-          zoom = 5.0;
-        }
-      });
-    }
-  }
+  final CameraController controller = CameraController();
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerSignal: onPointerSignal,
+    return GestureDetector(
+      onScaleStart: controller.onScaleStart,
+      onScaleUpdate: (details) {
+        setState(() {
+          controller.onScaleUpdate(details);
+        });
+      },
       child: CustomPaint(
-        painter: GridPainter(
-          zoom: zoom,
-        ),
-        size: Size.infinite,
+        painter: ViewportPainter(controller),
+        child: Container(),
       ),
     );
   }
 }
 
-class GridPainter extends CustomPainter {
-  final double zoom;
+class ViewportPainter extends CustomPainter {
+  final CameraController controller;
 
-  GridPainter({
-    required this.zoom,
-  });
+  ViewportPainter(this.controller);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey.shade800
-      ..strokeWidth = 1;
+    final camera = controller.camera;
 
-    final spacing = 40.0 * zoom;
-
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
-
-    // Líneas verticales hacia la derecha
-    for (
-      double x = centerX;
-      x < size.width;
-      x += spacing
-    ) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
-    }
-
-    // Líneas verticales hacia la izquierda
-    for (
-      double x = centerX;
-      x > 0;
-      x -= spacing
-    ) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
-    }
-
-    // Líneas horizontales hacia abajo
-    for (
-      double y = centerY;
-      y < size.height;
-      y += spacing
-    ) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
-    }
-
-    // Líneas horizontales hacia arriba
-    for (
-      double y = centerY;
-      y > 0;
-      y -= spacing
-    ) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
-    }
-
-    // Eje X
-    final axisPaintX = Paint()
-      ..color = Colors.red
-      ..strokeWidth = 2;
-
-    canvas.drawLine(
-      Offset(0, centerY),
-      Offset(size.width, centerY),
-      axisPaintX,
+    // fondo
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF1E1E1E),
     );
 
-    // Eje Y
-    final axisPaintY = Paint()
-      ..color = Colors.green
+    // mover origen al centro
+    canvas.translate(
+      size.width / 2 + camera.pan.dx,
+      size.height / 2 + camera.pan.dy,
+    );
+
+    // zoom
+    canvas.scale(camera.zoom);
+
+    // GRID
+    final gridPaint = Paint()
+      ..color = const Color(0xFF666666)
+      ..strokeWidth = 1 / camera.zoom;
+
+    const step = 50.0;
+    const limit = 10000.0;
+
+    for (double x = -limit; x <= limit; x += step) {
+      canvas.drawLine(
+        Offset(x, -limit),
+        Offset(x, limit),
+        gridPaint,
+      );
+    }
+
+    for (double y = -limit; y <= limit; y += step) {
+      canvas.drawLine(
+        Offset(-limit, y),
+        Offset(limit, y),
+        gridPaint,
+      );
+    }
+
+    // CUBO CENTRAL
+    final cubePaint = Paint()
+      ..color = const Color(0xFF2196F3);
+
+    canvas.drawRect(
+      Rect.fromCenter(
+        center: Offset.zero,
+        width: 100,
+        height: 100,
+      ),
+      cubePaint,
+    );
+
+    // CRUZ CAD (CENTRO)
+    final axisPaint = Paint()
+      ..color = const Color(0xFFFFFFFF)
       ..strokeWidth = 2;
 
+    final centerPaint = Paint()
+      ..color = const Color(0xFFFF3B3B);
+
+    // eje X
     canvas.drawLine(
-      Offset(centerX, 0),
-      Offset(centerX, size.height),
-      axisPaintY,
+      const Offset(-150, 0),
+      const Offset(150, 0),
+      axisPaint,
     );
+
+    // eje Y
+    canvas.drawLine(
+      const Offset(0, -150),
+      const Offset(0, 150),
+      axisPaint,
+    );
+
+    // punto central
+    canvas.drawCircle(Offset.zero, 5, centerPaint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
