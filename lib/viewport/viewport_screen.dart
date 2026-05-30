@@ -117,6 +117,12 @@ class _ViewportScreenState
                         'Cuadrado',
                       ),
                     ),
+                    DropdownMenuItem(
+                       value: ToolMode.line,
+                       child: Text(
+                             'Línea',
+                    ),
+                    ),
                   ],
 
                   onChanged: (value) {

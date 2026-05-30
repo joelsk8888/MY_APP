@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../camera/camera_controller.dart';
-import '../objects/rectangle_object.dart';
+import '../objects/rectangle/rectangle_object.dart';
 
 class SelectionManager {
   RectangleObject? selectedRectangle;

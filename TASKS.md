@@ -69,7 +69,7 @@
 ---
 
 ## Objetos
-- [ ] herramienta línea
+- [x] herramienta línea
 - [ ] círculos
 - [ ] primitivas
 - [ ] meshes

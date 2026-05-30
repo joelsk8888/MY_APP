@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../camera/camera_controller.dart';
 import '../core/cursor_state.dart';
 import '../core/tool_mode.dart';
-import '../objects/rectangle_object.dart';
+import '../objects/line/line_object.dart';
+import '../objects/rectangle/rectangle_object.dart';
 import '../selection/selection_manager.dart';
 
 class ViewportWidget extends StatefulWidget {
@@ -30,6 +31,10 @@ class _ViewportWidgetState
 
   final List<RectangleObject> rectangles =
       [];
+
+  final List<LineObject> lines = [];
+
+  Offset? lineStartPoint;
 
   void createRectangle(
     TapDownDetails details,
@@ -62,6 +67,47 @@ class _ViewportWidgetState
     );
   }
 
+  void createLine(
+    TapDownDetails details,
+    Size size,
+  ) {
+    final camera = controller.camera;
+
+    final screenPosition =
+        details.localPosition;
+
+    final worldX =
+        (screenPosition.dx -
+                size.width / 2 -
+                camera.pan.dx) /
+            camera.zoom;
+
+    final worldY =
+        (screenPosition.dy -
+                size.height / 2 -
+                camera.pan.dy) /
+            camera.zoom;
+
+    final point = Offset(
+      worldX,
+      worldY,
+    );
+
+    if (lineStartPoint == null) {
+      lineStartPoint = point;
+      return;
+    }
+
+    lines.add(
+      LineObject(
+        start: lineStartPoint!,
+        end: point,
+      ),
+    );
+
+    lineStartPoint = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -77,6 +123,14 @@ class _ViewportWidgetState
         return GestureDetector(
           onTapDown: (details) {
             setState(() {
+              if (widget.currentTool ==
+                  ToolMode.line) {
+                createLine(
+                  details,
+                  size,
+                );
+              }
+
               if (widget.currentTool ==
                   ToolMode.rectangle) {
                 createRectangle(
@@ -160,6 +214,7 @@ class _ViewportWidgetState
             painter: ViewportPainter(
               controller,
               rectangles,
+              lines,
             ),
             child: Container(),
           ),
@@ -176,9 +231,12 @@ class ViewportPainter
   final List<RectangleObject>
       rectangles;
 
+  final List<LineObject> lines;
+
   ViewportPainter(
     this.controller,
     this.rectangles,
+    this.lines,
   );
 
   @override
@@ -230,6 +288,19 @@ class ViewportPainter
         Offset(-limit, y),
         Offset(limit, y),
         gridPaint,
+      );
+    }
+
+    final linePaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth =
+          2 / camera.zoom;
+
+    for (final line in lines) {
+      canvas.drawLine(
+        line.start,
+        line.end,
+        linePaint,
       );
     }
 

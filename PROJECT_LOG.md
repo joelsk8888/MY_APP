@@ -147,3 +147,9 @@ El usuario puede crear, seleccionar y mover objetos dentro del viewport.
 - Visualización X/Y en pantalla.
 - Compatible con zoom y pan.
 - Base preparada para líneas y snap.
+## Herramienta Línea
+
+- Se implementó LineObject.
+- Creación de líneas mediante dos clics/taps.
+- Renderizado de segmentos en el viewport.
+- Base preparada para snapping y selección futura.
