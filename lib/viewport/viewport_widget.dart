@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../camera/camera_controller.dart';
+import '../core/cursor_state.dart';
 import '../core/tool_mode.dart';
 import '../objects/rectangle_object.dart';
 import '../selection/selection_manager.dart';
@@ -14,16 +15,21 @@ class ViewportWidget extends StatefulWidget {
   });
 
   @override
-  State<ViewportWidget> createState() => _ViewportWidgetState();
+  State<ViewportWidget> createState() =>
+      _ViewportWidgetState();
 }
 
-class _ViewportWidgetState extends State<ViewportWidget> {
-  final CameraController controller = CameraController();
+class _ViewportWidgetState
+    extends State<ViewportWidget> {
+  final CameraController controller =
+      CameraController();
 
-  final SelectionManager selectionManager =
+  final SelectionManager
+      selectionManager =
       SelectionManager();
 
-  final List<RectangleObject> rectangles = [];
+  final List<RectangleObject> rectangles =
+      [];
 
   void createRectangle(
     TapDownDetails details,
@@ -91,22 +97,65 @@ class _ViewportWidgetState extends State<ViewportWidget> {
               }
             });
           },
+
           onScaleStart:
               controller.onScaleStart,
+
           onScaleUpdate: (details) {
-           setState(() {
-            if (widget.currentTool == ToolMode.select &&
-                selectionManager.selectedRectangle != null &&
-                details.scale == 1.0) {
-             selectionManager.moveSelected(
-               details.focalPointDelta,
-               controller.camera.zoom,
-      );
-    } else {
-      controller.onScaleUpdate(details);
-    }
-  });
-},
+            final camera =
+                controller.camera;
+
+            final renderBox =
+                context
+                        .findRenderObject()
+                    as RenderBox;
+
+            final localPosition =
+                renderBox.globalToLocal(
+              details.focalPoint,
+            );
+
+            final worldX =
+                (localPosition.dx -
+                        size.width / 2 -
+                        camera.pan.dx) /
+                    camera.zoom;
+
+            final worldY =
+                (localPosition.dy -
+                        size.height / 2 -
+                        camera.pan.dy) /
+                    camera.zoom;
+
+            CursorState
+                .worldPosition.value = Offset(
+              worldX,
+              worldY,
+            );
+
+            setState(() {
+              if (widget.currentTool ==
+                      ToolMode.select &&
+                  selectionManager
+                          .selectedRectangle !=
+                      null &&
+                  details.scale == 1.0) {
+                selectionManager
+                    .moveSelected(
+                  details
+                      .focalPointDelta,
+                  controller
+                      .camera.zoom,
+                );
+              } else {
+                controller
+                    .onScaleUpdate(
+                  details,
+                );
+              }
+            });
+          },
+
           child: CustomPaint(
             painter: ViewportPainter(
               controller,
@@ -120,7 +169,8 @@ class _ViewportWidgetState extends State<ViewportWidget> {
   }
 }
 
-class ViewportPainter extends CustomPainter {
+class ViewportPainter
+    extends CustomPainter {
   final CameraController controller;
 
   final List<RectangleObject>

@@ -78,7 +78,7 @@
 
 ## Coordenadas
 - [ ] sistema de coordenadas visual
-- [ ] mostrar coordenadas actuales
+- [x] mostrar coordenadas actuales
 - [ ] unidades métricas
 - [ ] grid adaptable al zoom
 

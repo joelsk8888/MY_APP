@@ -141,3 +141,9 @@ Mejoras:
 
 Estado actual:
 El usuario puede crear, seleccionar y mover objetos dentro del viewport.
+## Sistema de coordenadas visual
+
+- Se añadieron coordenadas mundo en tiempo real.
+- Visualización X/Y en pantalla.
+- Compatible con zoom y pan.
+- Base preparada para líneas y snap.
