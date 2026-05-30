@@ -122,3 +122,22 @@ Mejoras:
 
 Estado actual:
 La aplicación permite crear múltiples rectángulos, seleccionarlos individualmente y mantener la selección sincronizada con el viewport.
+## Refactorización de selección
+
+- Se creó SelectionManager.
+- Se movió la lógica de selección fuera del viewport.
+- Se separaron responsabilidades entre UI y lógica.
+- El viewport ahora delega la selección al manager correspondiente.
+## Sistema de movimiento de objetos
+
+Nuevas funcionalidades:
+- arrastre de objetos seleccionados
+- movimiento de rectángulos en coordenadas mundo
+- integración entre SelectionManager y viewport
+
+Mejoras:
+- soporte para edición básica de escena
+- preparación para futuras transformaciones
+
+Estado actual:
+El usuario puede crear, seleccionar y mover objetos dentro del viewport.

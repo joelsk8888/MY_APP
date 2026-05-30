@@ -19,6 +19,9 @@
 - [x] Conversión pantalla → mundo
 - [x] Renderizado dinámico de objetos
 - [x] Object manager básico
+- [x] SelectionManager
+- [x] Refactorización del sistema de selección
+- [x] Separación UI / lógica de selección
 
 ---
 
@@ -36,6 +39,7 @@
 - [ ] mejoras multitáctiles
 - [ ] abstracción de gestos
 - [ ] controles escritorio
+- [ ] arrastre de objetos
 
 ---
 
@@ -59,10 +63,9 @@
 - [x] selección de objetos
 - [x] resaltado visual
 - [x] hit detection básico
-- [ ] mover objetos
+- [x] mover objetos
 - [ ] snapping
 - [ ] gizmos de transformación
-
 ---
 
 ## Objetos

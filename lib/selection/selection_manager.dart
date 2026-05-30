@@ -57,4 +57,18 @@ class SelectionManager {
       }
     }
   }
+
+  void moveSelected(
+    Offset delta,
+    double zoom,
+  ) {
+    if (selectedRectangle == null) {
+      return;
+    }
+
+    selectedRectangle!.position += Offset(
+      delta.dx / zoom,
+      delta.dy / zoom,
+    );
+  }
 }

@@ -94,12 +94,19 @@ class _ViewportWidgetState extends State<ViewportWidget> {
           onScaleStart:
               controller.onScaleStart,
           onScaleUpdate: (details) {
-            setState(() {
-              controller.onScaleUpdate(
-                details,
-              );
-            });
-          },
+           setState(() {
+            if (widget.currentTool == ToolMode.select &&
+                selectionManager.selectedRectangle != null &&
+                details.scale == 1.0) {
+             selectionManager.moveSelected(
+               details.focalPointDelta,
+               controller.camera.zoom,
+      );
+    } else {
+      controller.onScaleUpdate(details);
+    }
+  });
+},
           child: CustomPaint(
             painter: ViewportPainter(
               controller,
