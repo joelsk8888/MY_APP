@@ -41,42 +41,20 @@ class SelectionManager {
             camera.zoom;
 
     for (final rect in rectangles.reversed) {
-      final left =
-          rect.position.dx - rect.width / 2;
+      final left = rect.position.dx - rect.width / 2;
+      final right = rect.position.dx + rect.width / 2;
 
-      final right =
-          rect.position.dx + rect.width / 2;
-
-      final top =
-          rect.position.dy - rect.height / 2;
-
-      final bottom =
-          rect.position.dy + rect.height / 2;
+      final top = rect.position.dy - rect.height / 2;
+      final bottom = rect.position.dy + rect.height / 2;
 
       if (worldX >= left &&
           worldX <= right &&
           worldY >= top &&
           worldY <= bottom) {
         rect.selected = true;
-
         selectedRectangle = rect;
-
         break;
       }
     }
-  }
-
-  void moveSelectedRectangle(
-    DragUpdateDetails details,
-    CameraController controller,
-  ) {
-    if (selectedRectangle == null) return;
-
-    final zoom = controller.camera.zoom;
-
-    selectedRectangle!.position += Offset(
-      details.delta.dx / zoom,
-      details.delta.dy / zoom,
-    );
   }
 }

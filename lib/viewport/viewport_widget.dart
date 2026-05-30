@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../camera/camera_controller.dart';
 import '../core/tool_mode.dart';
 import '../objects/rectangle_object.dart';
+import '../selection/selection_manager.dart';
 
 class ViewportWidget extends StatefulWidget {
   final ToolMode currentTool;
@@ -19,69 +20,49 @@ class ViewportWidget extends StatefulWidget {
 class _ViewportWidgetState extends State<ViewportWidget> {
   final CameraController controller = CameraController();
 
+  final SelectionManager selectionManager =
+      SelectionManager();
+
   final List<RectangleObject> rectangles = [];
 
-  void createRectangle(TapDownDetails details, Size size) {
-    final camera = controller.camera;
-
-    final screenPosition = details.localPosition;
-
-    final worldX =
-        (screenPosition.dx - size.width / 2 - camera.pan.dx) /
-            camera.zoom;
-
-    final worldY =
-        (screenPosition.dy - size.height / 2 - camera.pan.dy) /
-            camera.zoom;
-
-    rectangles.add(
-      RectangleObject(
-        position: Offset(worldX, worldY),
-      ),
-    );
-  }
-
-  void selectRectangle(
+  void createRectangle(
     TapDownDetails details,
     Size size,
   ) {
     final camera = controller.camera;
 
-    final screenPosition = details.localPosition;
+    final screenPosition =
+        details.localPosition;
 
     final worldX =
-        (screenPosition.dx - size.width / 2 - camera.pan.dx) /
+        (screenPosition.dx -
+                size.width / 2 -
+                camera.pan.dx) /
             camera.zoom;
 
     final worldY =
-        (screenPosition.dy - size.height / 2 - camera.pan.dy) /
+        (screenPosition.dy -
+                size.height / 2 -
+                camera.pan.dy) /
             camera.zoom;
 
-    for (final rect in rectangles) {
-      rect.selected = false;
-    }
-
-    for (final rect in rectangles.reversed) {
-      final left = rect.position.dx - rect.width / 2;
-      final right = rect.position.dx + rect.width / 2;
-
-      final top = rect.position.dy - rect.height / 2;
-      final bottom = rect.position.dy + rect.height / 2;
-
-      if (worldX >= left &&
-          worldX <= right &&
-          worldY >= top &&
-          worldY <= bottom) {
-        rect.selected = true;
-        break;
-      }
-    }
+    rectangles.add(
+      RectangleObject(
+        position: Offset(
+          worldX,
+          worldY,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) {
+      builder: (
+        context,
+        constraints,
+      ) {
         final size = Size(
           constraints.maxWidth,
           constraints.maxHeight,
@@ -90,24 +71,35 @@ class _ViewportWidgetState extends State<ViewportWidget> {
         return GestureDetector(
           onTapDown: (details) {
             setState(() {
-              if (widget.currentTool == ToolMode.rectangle) {
-                createRectangle(details, size);
+              if (widget.currentTool ==
+                  ToolMode.rectangle) {
+                createRectangle(
+                  details,
+                  size,
+                );
               }
 
-              if (widget.currentTool == ToolMode.select) {
-                selectRectangle(details, size);
+              if (widget.currentTool ==
+                  ToolMode.select) {
+                selectionManager
+                    .selectRectangle(
+                  details,
+                  size,
+                  controller,
+                  rectangles,
+                );
               }
             });
           },
-
-          onScaleStart: controller.onScaleStart,
-
+          onScaleStart:
+              controller.onScaleStart,
           onScaleUpdate: (details) {
             setState(() {
-              controller.onScaleUpdate(details);
+              controller.onScaleUpdate(
+                details,
+              );
             });
           },
-
           child: CustomPaint(
             painter: ViewportPainter(
               controller,
@@ -123,7 +115,9 @@ class _ViewportWidgetState extends State<ViewportWidget> {
 
 class ViewportPainter extends CustomPainter {
   final CameraController controller;
-  final List<RectangleObject> rectangles;
+
+  final List<RectangleObject>
+      rectangles;
 
   ViewportPainter(
     this.controller,
@@ -131,29 +125,40 @@ class ViewportPainter extends CustomPainter {
   );
 
   @override
-  void paint(Canvas canvas, Size size) {
+  void paint(
+    Canvas canvas,
+    Size size,
+  ) {
     final camera = controller.camera;
 
     canvas.drawRect(
       Offset.zero & size,
-      Paint()..color = const Color(0xFF1E1E1E),
+      Paint()
+        ..color =
+            const Color(0xFF1E1E1E),
     );
 
     canvas.translate(
-      size.width / 2 + camera.pan.dx,
-      size.height / 2 + camera.pan.dy,
+      size.width / 2 +
+          camera.pan.dx,
+      size.height / 2 +
+          camera.pan.dy,
     );
 
     canvas.scale(camera.zoom);
 
     final gridPaint = Paint()
-      ..color = const Color(0xFF555555)
-      ..strokeWidth = 1 / camera.zoom;
+      ..color =
+          const Color(0xFF555555)
+      ..strokeWidth =
+          1 / camera.zoom;
 
     const step = 50.0;
     const limit = 10000.0;
 
-    for (double x = -limit; x <= limit; x += step) {
+    for (double x = -limit;
+        x <= limit;
+        x += step) {
       canvas.drawLine(
         Offset(x, -limit),
         Offset(x, limit),
@@ -161,7 +166,9 @@ class ViewportPainter extends CustomPainter {
       );
     }
 
-    for (double y = -limit; y <= limit; y += step) {
+    for (double y = -limit;
+        y <= limit;
+        y += step) {
       canvas.drawLine(
         Offset(-limit, y),
         Offset(limit, y),
@@ -172,8 +179,10 @@ class ViewportPainter extends CustomPainter {
     for (final rect in rectangles) {
       final rectPaint = Paint()
         ..color = rect.selected
-            ? const Color(0xFFFFD54F)
-            : const Color(0xFF2196F3);
+            ? const Color(
+                0xFFFFD54F)
+            : const Color(
+                0xFF2196F3);
 
       canvas.drawRect(
         Rect.fromCenter(
@@ -187,5 +196,10 @@ class ViewportPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(
+    covariant CustomPainter
+        oldDelegate,
+  ) {
+    return true;
+  }
 }
