@@ -41,6 +41,43 @@ class _ViewportWidgetState extends State<ViewportWidget> {
     );
   }
 
+  void selectRectangle(
+    TapDownDetails details,
+    Size size,
+  ) {
+    final camera = controller.camera;
+
+    final screenPosition = details.localPosition;
+
+    final worldX =
+        (screenPosition.dx - size.width / 2 - camera.pan.dx) /
+            camera.zoom;
+
+    final worldY =
+        (screenPosition.dy - size.height / 2 - camera.pan.dy) /
+            camera.zoom;
+
+    for (final rect in rectangles) {
+      rect.selected = false;
+    }
+
+    for (final rect in rectangles.reversed) {
+      final left = rect.position.dx - rect.width / 2;
+      final right = rect.position.dx + rect.width / 2;
+
+      final top = rect.position.dy - rect.height / 2;
+      final bottom = rect.position.dy + rect.height / 2;
+
+      if (worldX >= left &&
+          worldX <= right &&
+          worldY >= top &&
+          worldY <= bottom) {
+        rect.selected = true;
+        break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -52,11 +89,15 @@ class _ViewportWidgetState extends State<ViewportWidget> {
 
         return GestureDetector(
           onTapDown: (details) {
-            if (widget.currentTool == ToolMode.rectangle) {
-              setState(() {
+            setState(() {
+              if (widget.currentTool == ToolMode.rectangle) {
                 createRectangle(details, size);
-              });
-            }
+              }
+
+              if (widget.currentTool == ToolMode.select) {
+                selectRectangle(details, size);
+              }
+            });
           },
 
           onScaleStart: controller.onScaleStart,
@@ -93,22 +134,18 @@ class ViewportPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final camera = controller.camera;
 
-    // fondo
     canvas.drawRect(
       Offset.zero & size,
       Paint()..color = const Color(0xFF1E1E1E),
     );
 
-    // centro
     canvas.translate(
       size.width / 2 + camera.pan.dx,
       size.height / 2 + camera.pan.dy,
     );
 
-    // zoom
     canvas.scale(camera.zoom);
 
-    // grid
     final gridPaint = Paint()
       ..color = const Color(0xFF555555)
       ..strokeWidth = 1 / camera.zoom;
@@ -132,11 +169,12 @@ class ViewportPainter extends CustomPainter {
       );
     }
 
-    // cuadrados
-    final rectPaint = Paint()
-      ..color = const Color(0xFF2196F3);
-
     for (final rect in rectangles) {
+      final rectPaint = Paint()
+        ..color = rect.selected
+            ? const Color(0xFFFFD54F)
+            : const Color(0xFF2196F3);
+
       canvas.drawRect(
         Rect.fromCenter(
           center: rect.position,

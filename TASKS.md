@@ -12,41 +12,74 @@
 - [x] Pruebas Android
 - [x] Arquitectura inicial del engine
 
+- [x] Toolbar inferior
+- [x] Sistema de herramientas
+- [x] Herramienta de cuadrado
+- [x] Creación dinámica de objetos
+- [x] Conversión pantalla → mundo
+- [x] Renderizado dinámico de objetos
+- [x] Object manager básico
+
 ---
 
 # PENDIENTE
 
 ## Cámara
-- [ ] zoom centrado
+- [ ] zoom centrado en dedos
 - [ ] movimiento suave
 - [ ] orbit controls
 - [ ] sistema de rotación
+
+---
 
 ## Input
 - [ ] mejoras multitáctiles
 - [ ] abstracción de gestos
 - [ ] controles escritorio
 
+---
+
 ## Escena
-- [ ] implementación SceneObject
+- [ ] SceneObject completo
 - [ ] jerarquía de transforms
-- [ ] gestor de objetos
+- [ ] sistema de capas
+
+---
 
 ## Renderizado
 - [ ] pipeline de renderizado
 - [ ] wireframe
 - [ ] proyección 3D
 - [ ] clipping
+- [ ] depth sorting
+
+---
 
 ## Selección
-- [ ] picking
-- [ ] resaltado de selección
+- [x] selección de objetos
+- [x] resaltado visual
+- [x] hit detection básico
+- [ ] mover objetos
 - [ ] snapping
+- [ ] gizmos de transformación
+
+---
 
 ## Objetos
-- [ ] estructura mesh
+- [ ] herramienta línea
+- [ ] círculos
 - [ ] primitivas
-- [ ] abstracción de cubos
+- [ ] meshes
+
+---
+
+## Coordenadas
+- [ ] sistema de coordenadas visual
+- [ ] mostrar coordenadas actuales
+- [ ] unidades métricas
+- [ ] grid adaptable al zoom
+
+---
 
 ## Optimización
 - [ ] optimización viewport
@@ -61,6 +94,8 @@
 - [ ] importación OBJ
 - [ ] soporte glTF
 - [ ] iluminación
-- [ ] gizmos
-- [ ] sistema de capas
+- [ ] transform gizmos
 - [ ] guardar/cargar escenas
+- [ ] exportación
+- [ ] sistema de materiales
+- [ ] editor 3D completo

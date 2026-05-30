@@ -84,3 +84,41 @@ Próximos objetivos:
 - sistema Transform
 - pipeline de renderizado
 - sistema de selección
+## Día 3
+
+Implementación inicial del sistema de herramientas CAD.
+
+Nuevas funcionalidades:
+- toolbar inferior
+- selector de herramienta
+- modo selección
+- modo creación de cuadrados
+
+Sistema de objetos:
+- creación dinámica de cuadrados
+- renderizado basado en listas de objetos
+- conversión pantalla → mundo
+
+Mejoras internas:
+- eliminación de objetos hardcodeados
+- viewport desacoplado
+- inicio de arquitectura orientada a escena
+
+Estado actual:
+La aplicación ya permite crear objetos interactivos dentro del viewport usando coordenadas del mundo.
+## Día 3
+
+Implementación del sistema de selección de objetos.
+
+Nuevas funcionalidades:
+- selección de rectángulos mediante toque
+- deselección tocando espacio vacío
+- resaltado visual del objeto seleccionado
+- integración de selección con el sistema de herramientas
+
+Mejoras:
+- hit detection sobre objetos rectangulares
+- soporte para múltiples objetos en escena
+
+Estado actual:
+La aplicación permite crear múltiples rectángulos, seleccionarlos individualmente y mantener la selección sincronizada con el viewport.
