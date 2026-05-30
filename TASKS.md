@@ -64,12 +64,17 @@
 - [x] resaltado visual
 - [x] hit detection básico
 - [x] mover objetos
+- [ ] selección de líneas
+- [ ] mover líneas
+- [ ] edición de vértices
 - [ ] snapping
 - [ ] gizmos de transformación
 ---
 
 ## Objetos
 - [x] herramienta línea
+- [x] vista previa de línea
+- [x] renderizado de vértices
 - [ ] círculos
 - [ ] primitivas
 - [ ] meshes

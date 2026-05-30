@@ -36,6 +36,9 @@ class _ViewportWidgetState
 
   Offset? lineStartPoint;
 
+  Offset currentCursorWorld =
+      Offset.zero;
+
   void createRectangle(
     TapDownDetails details,
     Size size,
@@ -181,6 +184,11 @@ class _ViewportWidgetState
                         camera.pan.dy) /
                     camera.zoom;
 
+            currentCursorWorld = Offset(
+              worldX,
+              worldY,
+            );
+
             CursorState
                 .worldPosition.value = Offset(
               worldX,
@@ -215,6 +223,8 @@ class _ViewportWidgetState
               controller,
               rectangles,
               lines,
+              lineStartPoint,
+              currentCursorWorld,
             ),
             child: Container(),
           ),
@@ -233,10 +243,16 @@ class ViewportPainter
 
   final List<LineObject> lines;
 
+  final Offset? lineStartPoint;
+
+  final Offset currentCursorWorld;
+
   ViewportPainter(
     this.controller,
     this.rectangles,
     this.lines,
+    this.lineStartPoint,
+    this.currentCursorWorld,
   );
 
   @override
@@ -296,11 +312,45 @@ class ViewportPainter
       ..strokeWidth =
           2 / camera.zoom;
 
+    final previewPaint = Paint()
+      ..color = Colors.green
+      ..strokeWidth =
+          2 / camera.zoom;
+
+    final pointPaint = Paint()
+      ..color = Colors.red;
+
     for (final line in lines) {
       canvas.drawLine(
         line.start,
         line.end,
         linePaint,
+      );
+
+      canvas.drawCircle(
+        line.start,
+        6 / camera.zoom,
+        pointPaint,
+      );
+
+      canvas.drawCircle(
+        line.end,
+        6 / camera.zoom,
+        pointPaint,
+      );
+    }
+
+    if (lineStartPoint != null) {
+      canvas.drawLine(
+        lineStartPoint!,
+        currentCursorWorld,
+        previewPaint,
+      );
+
+      canvas.drawCircle(
+        lineStartPoint!,
+        7 / camera.zoom,
+        pointPaint,
       );
     }
 

@@ -153,3 +153,15 @@ El usuario puede crear, seleccionar y mover objetos dentro del viewport.
 - Creación de líneas mediante dos clics/taps.
 - Renderizado de segmentos en el viewport.
 - Base preparada para snapping y selección futura.
+## Próximo objetivo
+
+- Renderizado de vértices en líneas.
+- Vista previa durante la creación.
+- Preparación para edición geométrica.
+## Actualización - Herramienta Línea
+
+- Implementada creación de líneas mediante dos clics.
+- Añadida vista previa durante la creación.
+- Añadido renderizado visual de vértices.
+- Mejorado sistema de coordenadas del cursor.
+- Integración completa con zoom y pan.
